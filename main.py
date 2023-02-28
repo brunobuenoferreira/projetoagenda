@@ -16,10 +16,8 @@ def menu():
     print(
     '''
     [ 1 ] - Consultar horários disponíveis
-    [ 2 ] - Limpar Horário Cadastrado
-    [ 3 ] - Verificar Horários e Quadras Locadas
-    [ 4 ] - Consultar Valores a Pagar
-    [ 5 ] - Limpar Toda a Agenda
+    [ 2 ] - Agendar novo horário
+    [ 3 ] - Cadastrar client
     '''
     )
 
@@ -58,7 +56,7 @@ def consultaHorarios(data, opcao):
     con, cur = openConnectionDB()
     listaDATA = []
 
-    if opcao == 1:
+    if opcao == 1 or opcao == 3:
         for row in cur.execute('SELECT * FROM agenda'):
             listaDATA.append(row[1])
 
@@ -67,6 +65,8 @@ def consultaHorarios(data, opcao):
 
             for q in range(1,5):
                 lista = []
+                guardaIdHora = []
+                guardaHora = []
                 print(f'=================== Horários Quadra {q} ===================')
                 for row in cur.execute('SELECT * FROM agenda WHERE data = "{}" and quadra = {}'. format(data, q)):
                     lista.append(row[2])
@@ -77,13 +77,22 @@ def consultaHorarios(data, opcao):
 
                 for row in cur.execute('SELECT * FROM horarios'):
                     if row[0] in lista:
+                        guardaIdHora = []
+                        guardaHora = []
                         continue
                     else:
-                        print(f'{row[0]} | {row[1]}')
+                        if opcao == 1:
+                            print(f'{row[0]} | {row[1]}')
+                        else:
+                            guardaIdHora.append(row[0])
+                            guardaHora.append(row[1])
+
+                            if len(guardaIdHora) == 3:
+                                print(f'{guardaIdHora[0]} | {guardaHora[0]}')
+                                guardaIdHora.pop(0)
+                                guardaHora.pop(0)
         else:
             print("Sem agendamento para essa data ainda. Todos os horários disponíveis!")
-    elif opcao == 3:
-        pass
     else:
         print('Opção inválida')
     
